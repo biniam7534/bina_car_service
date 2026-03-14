@@ -6,6 +6,9 @@ const mongoose = require('./config/db');
 
 const application = express();
 
+// parse JSON bodies
+application.use(express.json());
+
 // Define Employee schema
 const employeeSchema = new mongoose.Schema({
     first_name: String,
@@ -20,9 +23,6 @@ const Employee = mongoose.model('Employee', employeeSchema);
 application.get('/', (req, res) => {
     res.send('Testing the backend!');
 });
-
-//to use express.json() middleware to present the request body as json
-application.use(express.json());
 
 // GET route to get all employees
 application.get('/employees', async (req, res) => {
@@ -53,8 +53,36 @@ application.post('/add-employees', async (req, res) => {
         };
         res.status(200).json(response);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to add employee' });
+        console.error('Failed to add employee:', err);
+        res.status(500).json({
+            error: 'Failed to add employee',
+            detail: err.message
+        });
+    }
+});
+// POST request handler to login an employee which comes to this route /login
+application.post('/login', async (req, res) => {
+    console.log('Login request body:', req.body);
+
+    // basic validation
+    const { email, password } = req.body || {};
+    if (!email || !password) {
+        return res.status(400).json({ error: 'email and password are required' });
+    }
+
+    try {
+        const employee = await Employee.findOne({ email: email.trim(), password });
+
+        if (!employee) {
+            console.log('Login failed: no matching employee');
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        console.log('Login successful for:', email);
+        res.status(200).json({ message: 'Login successful', employee });
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).json({ error: 'Failed to login', detail: err.message });
     }
 });
 const port = 4000;
