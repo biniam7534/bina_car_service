@@ -9,13 +9,12 @@ import AddEmployee from './pages/Add-employee';
 
 function App() {
   return (
-    <div className='App'>
-       <h1>Welcome to the Car Service App</h1>
-       <Routes>
-         <Route path="/" element={<Home />} />
-         <Route path="/login" element={<Login />} />
-         <Route path="/add-employee" element={<AddEmployee />} />
-       </Routes>
+    <div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/add-employee" element={<AddEmployee />} />
+      </Routes>
     </div>
 
   );

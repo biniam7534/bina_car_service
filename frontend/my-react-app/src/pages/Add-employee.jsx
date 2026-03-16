@@ -1,49 +1,42 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 
-function AddEmployee() {
-  const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    password: ''
-  });
+function AddEmployee(props) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setLoading(true);
     setMessage('');
+
+    const data = {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      password: password
+    };
 
     try {
       const response = await fetch('http://localhost:4000/add-employees', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
       if (response.ok) {
         setMessage('Employee added successfully!');
-        setFormData({
-          first_name: '',
-          last_name: '',
-          email: '',
-          password: ''
-        });
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPassword('');
       } else {
-        setMessage(data.error || data.detail || 'Failed to add employee');
+        setMessage(result.error || result.detail || 'Failed to add employee');
       }
     } catch (error) {
       console.error('Add employee error:', error);
@@ -54,59 +47,59 @@ function AddEmployee() {
   };
 
   return (
-    <div>
-      <h2>Add New Employee</h2>
+    <div style={{ textAlign: 'center', marginTop: '50px', fontFamily: 'Arial, sans-serif' }}>
+      <h1>Add employee</h1>
+      <br />
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="first_name">First Name:</label>
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>First name:</label>
           <input
             type="text"
-            id="first_name"
-            name="first_name"
-            value={formData.first_name}
-            onChange={handleChange}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            style={{ width: '250px', padding: '5px', fontSize: '16px' }}
             required
           />
         </div>
-        <div>
-          <label htmlFor="last_name">Last Name:</label>
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Last name:</label>
           <input
             type="text"
-            id="last_name"
-            name="last_name"
-            value={formData.last_name}
-            onChange={handleChange}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            style={{ width: '250px', padding: '5px', fontSize: '16px' }}
             required
           />
         </div>
-        <div>
-          <label htmlFor="email">Email:</label>
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Email:</label>
           <input
             type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: '250px', padding: '5px', fontSize: '16px' }}
             required
           />
         </div>
-        <div>
-          <label htmlFor="password">Password:</label>
+        <div style={{ marginBottom: '25px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Password:</label>
           <input
             type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: '250px', padding: '5px', fontSize: '16px' }}
             required
           />
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Adding...' : 'Add Employee'}
+        <button type="submit" disabled={loading} style={{ padding: '5px 15px', fontSize: '16px' }}>
+          Submit
         </button>
       </form>
-      {message && <p className={message.includes('successfully') ? 'success' : 'error'}>{message}</p>}
-      <p className="back-link"><Link to="/">Back to Home</Link></p>
+      {message && (
+        <p style={{ marginTop: '1rem', color: message.includes('successfully') ? 'green' : 'red' }}>
+          {message}
+        </p>
+      )}
     </div>
   );
 }
