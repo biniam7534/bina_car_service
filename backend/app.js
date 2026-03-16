@@ -1,10 +1,16 @@
 // import the express module
 const express = require('express');
 
+// import cors module
+const cors = require('cors');
+
 // import mongoose module and database connection
 const mongoose = require('./config/db');
 
 const application = express();
+
+// enable CORS for all routes
+application.use(cors());
 
 // parse JSON bodies
 application.use(express.json());
